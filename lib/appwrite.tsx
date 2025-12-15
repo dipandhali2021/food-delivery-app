@@ -6,6 +6,7 @@ import {
   Databases,
   ID,
   Query,
+  Storage,
 } from 'react-native-appwrite';
 
 export const appwriteConfig = {
@@ -16,7 +17,12 @@ export const appwriteConfig = {
     process.env.EXPO_PUBLIC_APPWRITE_PROJECT_NAME || 'Food Delivery App',
   databaseId:
     process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID || 'your-database-id',
-  UserCollectionId: 'user',
+  bucketId: process.env.EXPO_PUBLIC_APPWRITE_BUCKETS_ID || 'buckets',
+  userCollectionId: 'user',
+  categoriesCollectionId:'categories',
+  menuCollectionId:'menu',
+  customizationsCollectionId:'customizations',
+  menuCustomizationsCollectionId:'menu_customizations'
 };
 
 export const client = new Client();
@@ -28,6 +34,7 @@ client
 
 export const account = new Account(client);
 export const databases = new Databases(client);
+export const storage = new Storage(client);
 const avatars = new Avatars(client);
 
 export const createUser = async ({
@@ -44,7 +51,7 @@ export const createUser = async ({
 
     const newUser = await databases.createDocument(
       appwriteConfig.databaseId,
-      appwriteConfig.UserCollectionId,
+      appwriteConfig.userCollectionId,
       ID.unique(),
       {
         accountId: newAccount.$id,
@@ -74,7 +81,7 @@ export const getCurrentUser = async () => {
     if (!currentAccount) throw Error;
     const currentUser = await databases.listDocuments(
       appwriteConfig.databaseId,
-      appwriteConfig.UserCollectionId,
+      appwriteConfig.userCollectionId,
       [Query.equal('accountId', [currentAccount.$id])]
     );
     if (!currentUser) throw Error;
